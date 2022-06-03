@@ -10,7 +10,7 @@ const CryptoCard = () => {
             </View>
             <View>
                 <Text>$3000</Text>
-                <View>
+                <View >
                     <Text>!</Text>
                     <Text>1,82%</Text>
                 </View>
