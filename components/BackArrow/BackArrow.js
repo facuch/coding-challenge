@@ -21,8 +21,9 @@ const styles = StyleSheet.create({
         display:'flex',
         justifyContent:'flex-start',
         alignItems:'center',
-        marginLeft:20,
-        marginTop:10
+        position:'relative',
+        top:15,
+        left:15
     },
     text:{
         marginLeft:5
