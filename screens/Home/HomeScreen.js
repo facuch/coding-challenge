@@ -5,13 +5,16 @@ import {
     StyleSheet,
     Text,
     RefreshControl,
-    View,
+    TouchableOpacity,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import Header from '../../components/Header/Header';
 import CryptoCard from '../../components/CryptoCard/CryptoCard';
+import routes from '../../constants/routes';
 
 const HomeScreen = () => {
     const [refreshing, setRefreshing] = useState(false)
+    const navigation = useNavigation();
 
     const wait = (timeout) => {
         return new Promise(resolve => setTimeout(resolve, timeout));
@@ -45,9 +48,9 @@ const HomeScreen = () => {
                 <CryptoCard/>
                 <CryptoCard/>
                 <CryptoCard/>
-                <View>
+                <TouchableOpacity onPress={()=>navigation.navigate(routes.ADD_CRYPTO)}>
                     <Text style={styles.addCryptoText}>+ Add another cryptocurrency</Text>
-                </View>
+                </TouchableOpacity>
             </ScrollView>
         </SafeAreaView>
     )
