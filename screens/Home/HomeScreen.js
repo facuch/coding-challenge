@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     SafeAreaView,
     ScrollView,
@@ -8,22 +8,34 @@ import {
     TouchableOpacity,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { connect, useDispatch } from 'react-redux';
 import Header from '../../components/Header/Header';
 import CryptoCard from '../../components/CryptoCard/CryptoCard';
 import routes from '../../constants/routes';
+import { fetchData } from '../../redux/actions/cryptoAction';
 
-const HomeScreen = () => {
+const HomeScreen = ({crypto}) => {
     const [refreshing, setRefreshing] = useState(false)
     const navigation = useNavigation();
+    const dispatch = useDispatch();
 
     const wait = (timeout) => {
         return new Promise(resolve => setTimeout(resolve, timeout));
     }
 
-    const refreshHandler = React.useCallback(() => {
-        setRefreshing(true);
-        wait(2000).then(() => setRefreshing(false));
+    const refreshHandler = React.useCallback(async () => {
+        try {
+            setRefreshing(true);
+            dispatch(fetchData()).then(setRefreshing(false));
+        } catch (error) {
+            console.log(error)
+            setRefreshing(false)
+        }
     }, []);
+
+    useEffect(()=>{
+        console.log(crypto.data)
+    },[crypto])
 
     return(
         <SafeAreaView style={styles.screenContainer}>
@@ -70,4 +82,9 @@ const styles = StyleSheet.create({
     }
 })
 
-export default HomeScreen
+const mapStateToProps = (state) => {
+    const { crypto } = state
+    return { crypto }
+};
+
+export default connect(mapStateToProps)(HomeScreen)
