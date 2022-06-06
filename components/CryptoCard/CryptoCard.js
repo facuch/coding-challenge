@@ -2,27 +2,33 @@ import React from 'react';
 import { StyleSheet, View, Text, Dimensions, TouchableOpacity } from 'react-native'
 import Icon from 'react-native-vector-icons/Entypo'
 import IconArrow from 'react-native-vector-icons/Feather'
+import { useDispatch } from 'react-redux';
+import { removeCrypto } from '../../redux/actions/cryptoAction';
 
-const CryptoCard = () => {
+
+const CryptoCard = ({name, symbol, price, down, percentage, item}) => {
+    const dispatch = useDispatch();
     return(
         <View style={styles.cardContainer}>
             <View>
-                <Text>Bitcoin</Text>
-                <Text>BTC</Text>
+                <Text>{name}</Text>
+                <Text>{symbol}</Text>
             </View>
             <View style={styles.rightContainer}>
                 <View>
-                    <Text>$3000</Text>
+                    <Text>$ {price}</Text>
                     <View style={styles.percentage}>
                         <IconArrow
-                            name={true ? "arrow-up-right" : "arrow-down-left"}
+                            name={!down ? "arrow-up-right" : "arrow-down-left"}
                             size={15}
-                            color={true ? "green" : "red"}
+                            color={!down ? "green" : "red"}
                         />
-                        <Text>1,82%</Text>
+                        <Text>{percentage}%</Text>
                     </View>
                 </View>
-                <TouchableOpacity>
+                <TouchableOpacity
+                    onPress={()=>dispatch(removeCrypto(item))}
+                >
                     <Icon
                         name="cross"
                         size={20}
@@ -36,7 +42,6 @@ const CryptoCard = () => {
 
 const styles = StyleSheet.create({
     cardContainer:{
-        flex:1,
         marginBottom:10,
         display:'flex',
         justifyContent:'space-between',

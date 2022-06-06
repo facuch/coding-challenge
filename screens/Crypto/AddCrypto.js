@@ -1,14 +1,48 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, SafeAreaView, Text, Dimensions, TouchableOpacity } from 'react-native';
 import { AutocompleteDropdown } from 'react-native-autocomplete-dropdown';
+import { connect, useDispatch } from 'react-redux';
 import BackArrow from '../../components/BackArrow/BackArrow';
 import { useNavigation } from '@react-navigation/native';
 import routes from '../../constants/routes';
+import { fetchData, addCrypto } from '../../redux/actions/cryptoAction';
 
-const AddCrypto = () => {
-    const dataset = [{id:1,title:'Bitcoin'},{id:2,title:'Ethereum'},{id:3,title:'Tether'},{id:4,title:'USDC'},{id:5,title:'Litecoin'}]
+const AddCrypto = ({crypto}) => {
+    const [selectedCrypto, setSelectedCrypto] = useState({})
+    const chosen = crypto.chosen
+    const data = crypto.data
+    const navigation = useNavigation();
+    const dispatch = useDispatch();
+
+    const generateDataset = () => {
+        let newChosenData = data
+        if(chosen.length >= 1){
+            chosen.forEach((value)=>{
+                const index = newChosenData.findIndex((newValue)=>newValue.name === value.name)
+                newChosenData.splice(index, 1)
+            })
+        }
+        return newChosenData.map((crypto)=>{return ({id:crypto.serial_id, title:crypto.name})})
+
+    }
+
+    const handleSelectItem = (item) =>{
+        if(item){
+            const selected = data.filter((crypto)=> crypto.name === item.title)
+            setSelectedCrypto(selected[0])
+        }
+    }
+    const addAndContinue = () => {
+        setSelectedCrypto({})
+        dispatch(addCrypto(selectedCrypto))
+        navigation.navigate(routes.MAIN)
+    }
+
+
+    useEffect(()=>{
+        dispatch(fetchData())
+    },[])
     
-    const navigation = useNavigation()
     return(
         <SafeAreaView style={styles.screenContainer}>
             <BackArrow/>
@@ -19,13 +53,14 @@ const AddCrypto = () => {
                         clearOnFocus={false}
                         closeOnBlur={true}
                         closeOnSubmit={false}
-                        onSelectItem={(item)=>{console.log(item)}}
-                        dataSet={dataset}
+                        onSelectItem={(item)=>handleSelectItem(item)}
+                        dataSet={generateDataset()}
                         containerStyle={styles.inputContainerStyle}
                     />
                 <TouchableOpacity
-                    onPress={()=>{navigation.navigate(routes.MAIN)}}
+                    onPress={addAndContinue}
                     style={styles.button}
+                    //disabled={Object.keys(selectedCrypto).length === 0}
                 >
                     <Text style={styles.insideButton}>Add</Text>
                 </TouchableOpacity>
@@ -70,4 +105,9 @@ const styles = StyleSheet.create({
     }
 })
 
-export default AddCrypto
+const mapStateToProps = (state) => {
+    const { crypto } = state
+    return { crypto }
+};
+
+export default connect(mapStateToProps)(AddCrypto)
